@@ -4,6 +4,10 @@ import rates from "cross-rates-browser";
 
 rates.refreshRates();
 
+function compareStrings(a, b) {
+    return (a < b) ? -1 : (a > b ? 1 : 0)
+}
+
 function App() {
     if (!rates.isReady()) {
         return
@@ -14,7 +18,7 @@ function App() {
         previousValue[currentValue.code] || (previousValue[currentValue.code] = currentValue)
         return previousValue
     }, {});
-    const currencies = Object.values(map);
+    const currencies = Object.values(map).sort((a, b) => compareStrings(a.code, b.code));
     let currency1, currency2, sourceInput, resultInput;
 
     function tryUpdate() {
@@ -25,6 +29,7 @@ function App() {
         resultInput.value = rates.transform(sourceInput.valueAsNumber, currency1, currency2);
         console.log(resultInput.value)
     }
+
     return (
         <div className="App">
             <header className="App-header">
