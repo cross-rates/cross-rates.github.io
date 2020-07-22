@@ -2,36 +2,19 @@ import React from 'react';
 import './App.css';
 import rates from "cross-rates-browser";
 
-function compareStrings(a, b) {
-    return (a < b) ? -1 : (a > b ? 1 : 0)
-}
-
 class App extends React.Component {
+    state = {};
+
     componentDidMount() {
-        rates.triggerOnChange(r => this.setState({r: r}));
+        rates.triggerOnChange(_ => this.setState({isReady: rates.isReady()}));
         rates.refreshRates();
     }
 
     render() {
-        if (!rates.isReady()) {
+        if (!this.state.isReady) {
             return null
         }
-        const fiatCurrencies = rates.getFiatCurrencies();
-        const cryptoCurrencies = rates.getCryptoCurrencies();
-        const map = [].concat(fiatCurrencies).concat(cryptoCurrencies).reduce((previousValue, currentValue) => {
-            previousValue[currentValue.code] || (previousValue[currentValue.code] = currentValue)
-            return previousValue
-        }, {});
-        const currencies = Object.values(map).sort((a, b) => compareStrings(a.code, b.code));
-        let resultInput, sourceInput;
-
-        const tryUpdate = () => {
-            if (!this.state.currency1 || !this.state.currency2 || isNaN(sourceInput.valueAsNumber)) {
-                resultInput.value = "";
-                return
-            }
-            resultInput.value = rates.transform(sourceInput.valueAsNumber, this.state.currency1, this.state.currency2);
-        }
+        const currencies = rates.getAvailableCurrencies();
         return (
             <div className="App">
                 <header className="App-header">
@@ -42,11 +25,9 @@ class App extends React.Component {
                     <div className="options">
                         <div className="left-side">
                             <select
-                                onChange={e => {
-                                    this.setState({
-                                        currency1: e.target.value
-                                    }, tryUpdate);
-                                }}
+                                onChange={e => this.setState({
+                                    currency1: e.target.value
+                                })}
                                 name="currencies1">
                                 <option disabled selected value> - currency -</option>
                                 {
@@ -55,17 +36,17 @@ class App extends React.Component {
                                 }
                             </select>
                             <input
-                                onChange={tryUpdate}
-                                ref={input => input && (sourceInput = input)} type="number" name="currency1"/>
+                                onChange={e => this.setState({
+                                    sourceAmountValue: e.target.valueAsNumber
+                                })}
+                                ref={input => input && input.focus()} type="number" name="currency1"/>
                         </div>
                         =
                         <div className="right-side">
                             <select
-                                onChange={e => {
-                                    this.setState({
-                                        currency2: e.target.value
-                                    }, tryUpdate);
-                                }}
+                                onChange={e => this.setState({
+                                    currency2: e.target.value
+                                })}
                                 name="currencies2">
                                 <option disabled selected value> - currency -</option>
                                 {
@@ -73,7 +54,26 @@ class App extends React.Component {
                                                                 name={c.name}>{c.code}</option>)
                                 }
                             </select>
-                            <input ref={r => r && (resultInput = r)} type="number" name="currency2" readOnly={true}/>
+                            <input
+                                ref={resultInput => {
+                                    if (!resultInput) {
+                                        return
+                                    }
+                                    if (!this.state.currency1
+                                        || !this.state.currency2
+                                        || !this.state.sourceAmountValue
+                                        || isNaN(this.state.sourceAmountValue)
+                                    ) {
+                                        resultInput.value = "";
+                                        return
+                                    }
+                                    resultInput.value = rates.transform(
+                                        this.state.sourceAmountValue, this.state.currency1, this.state.currency2
+                                    );
+                                }}
+                                type="number"
+                                name="currency2"
+                                readOnly={true}/>
                         </div>
                     </div>
                 </div>
