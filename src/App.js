@@ -39,7 +39,8 @@ class App extends React.Component {
                                 onChange={e => this.setState({
                                     sourceAmountValue: e.target.valueAsNumber
                                 })}
-                                ref={input => input && input.focus()} type="number" name="currency1"/>
+                                type="number"
+                                name="currency1"/>
                         </div>
                         =
                         <div className="right-side">
@@ -67,11 +68,14 @@ class App extends React.Component {
                                         resultInput.value = "";
                                         return
                                     }
-                                    resultInput.value = rates.transform(
+                                    const result = rates.transform(
                                         this.state.sourceAmountValue, this.state.currency1, this.state.currency2
                                     );
+                                    resultInput.value = Number(result).toFixed((
+                                        rates.getCurrencyInfo(this.state.currency2) || {afterDecimalPoint: 2}
+                                    ).afterDecimalPoint);
                                 }}
-                                type="number"
+                                type="text"
                                 name="currency2"
                                 readOnly={true}/>
                         </div>
