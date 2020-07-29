@@ -76,15 +76,27 @@ class App extends React.Component {
                                     const result = rates.transform(
                                         this.state.sourceAmountValue, this.state.currency1, this.state.currency2
                                     );
-                                    resultInput.value = Number(result).toFixed((
+                                    const fractionDigits = (
                                         rates.getCurrencyInfo(this.state.currency2) || {afterDecimalPoint: 2}
-                                    ).afterDecimalPoint);
+                                    ).afterDecimalPoint;
+                                    resultInput.value = Number(result).toFixed(fractionDigits);
                                 }}
                                 type="text"
                                 name="currency2"
                                 readOnly={true}/>
                         </div>
                     </div>
+                    {
+                        (this.state.currency1 && this.state.currency2)
+                        && (<div className={"rate-row"}>
+                            1 : {
+                            Number(rates.transform(1.0, this.state.currency1, this.state.currency2))
+                                .toFixed((
+                                    rates.getCurrencyInfo(this.state.currency2) || {afterDecimalPoint: 2}
+                                ).afterDecimalPoint)
+                        }
+                        </div>)
+                    }
                 </div>
             </div>
         );
