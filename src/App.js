@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import rates from "cross-rates-browser";
+import SelectSearch from "react-select-search";
 
 class App extends React.Component {
     state = {};
@@ -15,6 +16,10 @@ class App extends React.Component {
             return null
         }
         const currencies = rates.getAvailableCurrencies();
+        const options = currencies.map(c => ({
+            name: c.code + ((c.code === c.name) ? "" : ` - ${c.name}`),
+            value: c.code,
+        }));
         return (
             <div className="App">
                 <header className="App-header">
@@ -24,38 +29,38 @@ class App extends React.Component {
                     <p>Transform:</p>
                     <div className="options">
                         <div className="left-side">
-                            <select
-                                onChange={e => this.setState({
-                                    currency1: e.target.value
+                            <SelectSearch
+                                options={options}
+                                search
+                                autocomplete="on"
+                                name="currencies1"
+                                placeholder="Select currency"
+                                onChange={selectedCurrency => this.setState({
+                                    currency1: selectedCurrency
                                 })}
-                                name="currencies1">
-                                <option disabled selected value> - currency -</option>
-                                {
-                                    currencies.map(c => <option key={c.code} title={c.name}
-                                                                name={c.name}>{c.code}</option>)
-                                }
-                            </select>
+                            />
                             <input
+                                className={"value-input"}
                                 onChange={e => this.setState({
                                     sourceAmountValue: e.target.valueAsNumber
                                 })}
                                 type="number"
                                 name="currency1"/>
                         </div>
-                        =
+                        <span className={"equals-sign"}>=</span>
                         <div className="right-side">
-                            <select
-                                onChange={e => this.setState({
-                                    currency2: e.target.value
+                            <SelectSearch
+                                options={options}
+                                search
+                                autocomplete="on"
+                                name="currencies2"
+                                placeholder="Select currency"
+                                onChange={selectedCurrency => this.setState({
+                                    currency2: selectedCurrency
                                 })}
-                                name="currencies2">
-                                <option disabled selected value> - currency -</option>
-                                {
-                                    currencies.map(c => <option key={c.code} title={c.name}
-                                                                name={c.name}>{c.code}</option>)
-                                }
-                            </select>
+                            />
                             <input
+                                className={"value-input"}
                                 ref={resultInput => {
                                     if (!resultInput) {
                                         return
