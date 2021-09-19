@@ -8,6 +8,7 @@
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
     "cross-rates-browser": "0.1.28",
+    "cross-rates": "0.1.27",
     "react-select-search": "^2.0.4"
   },
   "devDependencies": {
