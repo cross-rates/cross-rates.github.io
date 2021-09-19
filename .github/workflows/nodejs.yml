@@ -23,7 +23,7 @@ jobs:
           token: ${{ secrets.ACCESS_TOKEN }}
           branch: master # The branch the action should deploy to.
           folder: build # The folder the action should deploy.
-          single-commit: true # This option can be toggled to true if you'd prefer to have a single commit on the
+          #single-commit: true # This option can be toggled to true if you'd prefer to have a single commit on the
             # deployment branch instead of maintaining the full history. Using this option will also cause any existing
           # history to be wiped from the deployment branch.
           clean: true # clean build folder up
